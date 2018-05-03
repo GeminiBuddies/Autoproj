@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ApplicationIcon />
+    <Win32Resource />
+    <Description>XXX</Description>
+    <Authors>XXX</Authors>
+    <Company>XXX</Company>
+    <Product>XXX</Product>
+    <AssemblyVersion>0.9.3.18</AssemblyVersion>
+    <Copyright>Copyright © YYY 2017 - 2018</Copyright>
+    <FileVersion>0.9.3.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Version>0.9.3-pre-20180412-18</Version>
+    <PackageLicenseUrl>https://github.com/YYY/XXX/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/YYY/XXX/</PackageProjectUrl>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>xxx.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+</Project>
+
+<!-- 
+autoproj version: 0.9.0.0
+input file: C:\Users\Gemini\source\repos\Autoproj\test\autoprojtest.csproj.autoproj
+output file: C:\Users\Gemini\source\repos\Autoproj\test\autoprojtest.csproj
+convert time: 2018/04/12,00:54:23
+-->
