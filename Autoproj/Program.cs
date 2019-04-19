@@ -4,49 +4,54 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+using CommandLine;
+using CommandLine.Text;
+
 namespace GeminiLab.Autoproj {
-    internal static class Program {
-        private static void initEnv(AutoprojEnv rootEnv) {
-            rootEnv.TryAddConst("lcommand", "<~~");
-            rootEnv.TryAddConst("rcommand", "~~>");
-            rootEnv.TryAddConst("lreplace", "<~");
-            rootEnv.TryAddConst("rreplace", "~>");
-
-            rootEnv.TryAddConst("autoprojver", typeof(Program).Assembly.GetName().Version.ToString());
-            rootEnv.TryAddFunction("now", param => param.Length == 1 ? DateTime.Now.ToString(param[0]) : DateTime.Now.ToString(CultureInfo.InvariantCulture));
+    internal class Program { 
+        private void optMain(CommandlineOptions opt) {
+            Processor.ProcessDirectory(new DirectoryInfo(opt.Path ?? "."), AutoprojEnv.GetRootEnv(), opt);
         }
 
-        private static void enumerateDir(DirectoryInfo directory, AutoprojEnv env) {
-            var thisEnv = new AutoprojEnv(env, directory);
+        private static string getHelpString() {
+            var help = new HelpText {
+                Heading = new HeadingInfo(Def.ProgramName, Def.VersionString),
+                Copyright = new CopyrightInfo(Def.Author, 2018, DateTime.Now.Year),
+                AdditionalNewLineAfterOption = true,
+                AddDashesToOption = true,
+                MaximumDisplayWidth = 120
+            };
+            help.AddPreOptionsLine(" ");
+            help.AddPreOptionsLine(Def.OpenSourceInfo);
+            help.AddOptions(res);
+            help.AddPostOptionsLine("");
 
-            var rootFile = new FileInfo(Path.Combine(directory.FullName, ".autoproj"));
-            if (rootFile.Exists) FileProcessor.ProcessFile(rootFile, thisEnv);
-
-            foreach (var file in directory.EnumerateFiles()) if (file.Name != ".autoproj" && file.Extension == ".autoproj") {
-                string outputfullname = file.FullName.Substring(0, file.FullName.Length - ".autoproj".Length);
-                var fileEnv = new AutoprojEnv(thisEnv, file);
-
-                var cont = FileProcessor.ProcessFile(file, fileEnv);
-                var sw = new StreamWriter(new FileStream(outputfullname, FileMode.Create, FileAccess.Write), new UTF8Encoding(false));
-                sw.Write(cont);
-                sw.Close();
-
-                fileEnv.EndUse();
-            }
-
-            foreach (var dir in directory.EnumerateDirectories()) {
-                enumerateDir(dir, thisEnv);
-            }
-
-            thisEnv.EndUse();
+            return help;
         }
+
+        private static ParserResult<CommandlineOptions> res;
 
         public static void Main(string[] args) {
-            var rootDir = new DirectoryInfo(Environment.CurrentDirectory);
-            var rootEnv = new AutoprojEnv();
+            var program = new Program();
 
-            initEnv(rootEnv);
-            enumerateDir(rootDir, rootEnv);
+            var parser = new Parser(settings => {
+                settings.HelpWriter = null;
+                settings.EnableDashDash = true;
+            });
+
+            res = parser.ParseArguments<CommandlineOptions>(args);
+            res.WithParsed(program.optMain).WithNotParsed(errs => {
+                foreach (var e in errs) {
+                    if (e is HelpRequestedError) {
+                        Console.WriteLine(getHelpString());
+                    } else if (e is VersionRequestedError) {
+                        Console.WriteLine(Def.VersionString);
+                    } else {
+                        Console.WriteLine($"Error#{e.Tag}");
+                        Environment.Exit(1);
+                    }
+                }
+            });
         }
     }
 }

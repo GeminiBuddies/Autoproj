@@ -1,0 +1,6 @@
+<~~ static_counter a ~~>
+echo "<~ now ~>"
+echo "<~ a ~>#<~ a ~>#<~ a ~>"
+echo "<~ path ~>"
+echo "<~ outputname ~>"
+echo "<~ outputfullname ~>"

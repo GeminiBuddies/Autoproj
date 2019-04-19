@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+using GeminiLab.Core2;
 using GeminiLab.Core2.Collections;
 using GeminiLab.Core2.ML.Json;
 
@@ -17,15 +18,13 @@ namespace GeminiLab.Autoproj {
         StaticCounter
     }
 
-    internal class AutoprojEnv {
-        private readonly Dictionary<string, AutoprojEnvItemType> _type;
-        private readonly Dictionary<string, ulong> _staticCounters;
-        private readonly Dictionary<string, ulong> _counters;
-        private readonly Dictionary<string, string> _vars;
-        private readonly Dictionary<string, string> _consts;
-        private readonly Dictionary<string, Func<string[], string>> _funcs;
-
-        private readonly string _dbFile = null;
+    internal partial class AutoprojEnv {
+        protected readonly Dictionary<string, AutoprojEnvItemType> _type;
+        protected readonly Dictionary<string, ulong> _staticCounters;
+        protected readonly Dictionary<string, ulong> _counters;
+        protected readonly Dictionary<string, string> _vars;
+        protected readonly Dictionary<string, string> _consts;
+        protected readonly Dictionary<string, Func<string[], string>> _funcs;
 
         public AutoprojEnv Parent { get; }
         public AutoprojEnv Root { get; }
@@ -49,79 +48,21 @@ namespace GeminiLab.Autoproj {
             _funcs = new Dictionary<string, Func<string[], string>>();
         }
 
-        public AutoprojEnv(AutoprojEnv parent, DirectoryInfo dir) : this(parent) {
-            var dbFile = new FileInfo(_dbFile = Path.Combine(dir.FullName, ".autoproj.jdb"));
-            if (dbFile.Exists) readFromFile(dbFile);
+
+        public void Begin() {
+            DoBegin();
         }
 
-        public AutoprojEnv(AutoprojEnv parent, FileInfo file) : this(parent) {
-            var dbFile = new FileInfo(_dbFile = file.FullName + ".jdb");
-            if (dbFile.Exists) readFromFile(dbFile);
-
-            TryAddConst("filename", file.Name);
-            TryAddConst("filefullname", file.FullName);
-            TryAddConst("outputname", file.Name.Substring(0, file.Name.Length - ".autoproj".Length));
-            TryAddConst("outputfullname", file.FullName.Substring(0, file.FullName.Length - ".autoproj".Length));
+        public void End() {
+            DoEnd();
         }
 
-        private void readFromFile(FileInfo dbFile) {
-            var sr = new StreamReader(dbFile.OpenRead(), Encoding.UTF8);
-            var cont = sr.ReadToEnd();
-            sr.Close();
-
-            var db = JsonParser.Parse(cont);
-
-            if (db is JsonObject obj) {
-                if (obj.TryGetValue("static_counters", out var val) && val is JsonObject cnts) {
-                    foreach (var cnt in cnts.Values) {
-                        var name = cnt.Key;
-                        ulong value = 0;
-                        bool good = false;
-
-                        if (cnt.Value is JsonNumber num && !num.IsFloat && num.ValueInt > 0) {
-                            value = (ulong)num.ValueInt;
-                            good = true;
-                        } else if (cnt.Value is JsonString valueStr && ulong.TryParse(valueStr, out ulong res)) {
-                            value = res;
-                            good = true;
-                        }
-
-                        if (good) {
-                            if (_staticCounters.ContainsKey(name)) {
-                                // todo: log here, warning
-                            } else {
-                                _type[name] = AutoprojEnvItemType.StaticCounter;
-                                _staticCounters[name] = value;
-                            }
-                        } else {
-                            // todo: log here
-                        }
-                    }
-                } else {
-                    // todo: log here
-                }
-            } else {
-                // todo: invalid file, log here
-            }
+        protected virtual void DoBegin() {
+            // nothing here
         }
 
-        private void saveToWriter(TextWriter writer) {
-            JsonObject scs = new JsonObject();
-            _staticCounters.Keys.ForEach(key => scs.Append(key, new JsonString(_staticCounters[key].ToString())));
-
-            JsonObject output = new JsonObject();
-            output.Append("static_counters", scs);
-
-            writer.Write(output.ToStringPrettified());
-        }
-
-        public void EndUse() {
-            if (_staticCounters.Count > 0) {
-                var sw = new StreamWriter(new FileStream(_dbFile, FileMode.Create));
-
-                saveToWriter(sw);
-                sw.Close();
-            }
+        protected virtual void DoEnd() {
+            // nothing here
         }
 
         public bool TryGetVariable(string key, out string value) {

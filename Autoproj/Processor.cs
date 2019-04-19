@@ -5,11 +5,40 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace GeminiLab.Autoproj {
-    internal static class FileProcessor {
-        public static Regex reg = new Regex(@"<~(?<content>[^<~]*)~>");
+using GeminiLab.Core2;
 
-        public static string ProcessFile(FileInfo file, AutoprojEnv env) {
+namespace GeminiLab.Autoproj {
+    internal static class Processor {
+        public static void ProcessDirectory(DirectoryInfo directory, AutoprojEnv parentEnv, CommandlineOptions options) {
+            var thisEnv = AutoprojEnv.GetDirectoryEnv(parentEnv, directory, options);
+            thisEnv.Begin();
+
+            var rootFile = new FileInfo(Path.Combine(directory.FullName, options.TemplateExtension));
+            if (rootFile.Exists) ProcessFile(rootFile, thisEnv, null);
+
+            foreach (var file in directory.EnumerateFiles()) {
+                if (file.Extension == options.TemplateExtension && file.Name != options.TemplateExtension) {
+                    string filePath = file.FullName;
+                    string outputPath = filePath.Substring(0, filePath.Length - options.TemplateExtension.Length);
+                    string storagePath = outputPath + options.TemplateJsonExtension;
+
+                    var fileEnv = AutoprojEnv.GetFileEnv(thisEnv, file, options);
+                    fileEnv.Begin();
+                    ProcessFile(file, fileEnv, outputPath);
+                    fileEnv.End();
+                }
+            }
+
+            foreach (var dir in directory.EnumerateDirectories()) {
+                ProcessDirectory(dir, thisEnv, options);
+            }
+
+            thisEnv.End();
+        }
+
+        public static Regex reg = new Regex(@"<~(?<content>[^<~>]*)~>");
+
+        public static void ProcessFile(FileInfo file, AutoprojEnv env, string outputfile) {
             StreamReader sr = null;
             try {
                 long line = 0;
@@ -37,11 +66,15 @@ namespace GeminiLab.Autoproj {
                 }
 
                 sr.Close();
-                
-                return sb.ToString();
+
+                if (outputfile == null) return;
+
+                var sw = new StreamWriter(new FileStream(outputfile, FileMode.Create, FileAccess.Write), new UTF8Encoding(false));
+                sw.Write(sb.ToString());
+                sw.Close();
             } catch (Exception ex) {
                 // todo: log here
-                return null;
+                return;
             } finally {
                 sr?.Dispose();
             }
