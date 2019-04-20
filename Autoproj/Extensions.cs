@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace GeminiLab.Autoproj {
@@ -11,9 +12,7 @@ namespace GeminiLab.Autoproj {
         }
 
         public static IEnumerable<string> RemoveEmpty(this IEnumerable<string> src) {
-            foreach (var s in src)
-                if (!string.IsNullOrEmpty(s))
-                    yield return s;
+            return src.Where(s => !string.IsNullOrEmpty(s));
         }
     }
 }

@@ -36,7 +36,7 @@ namespace GeminiLab.Autoproj {
             thisEnv.End();
         }
 
-        public static Regex reg = new Regex(@"<~(?<content>[^<~>]*)~>");
+        private static readonly Regex Reg = new Regex(@"<~(?<content>[^<~>]*)~>");
 
         public static void ProcessFile(FileInfo file, AutoprojEnv env, string outputfile) {
             StreamReader sr = null;
@@ -61,7 +61,7 @@ namespace GeminiLab.Autoproj {
                     } else {
                         ++outputline;
 
-                        sb.AppendLine(reg.Replace(l, match => matchEvaluator(match, env)));
+                        sb.AppendLine(Reg.Replace(l, match => matchEvaluator(match, env)));
                     }
                 }
 
@@ -87,11 +87,11 @@ namespace GeminiLab.Autoproj {
                 if (parameters.Length < 2) return;
 
                 string name = parameters[1];
-                ulong initv;
+                long initv;
 
                 if (parameters.Length == 2)
                     initv = 0;
-                else if (parameters.Length > 3 || !ulong.TryParse(parameters[2], out initv))
+                else if (parameters.Length > 3 || !long.TryParse(parameters[2], out initv))
                     return;
 
                 env.TryAddCounter(name, initv);
@@ -99,14 +99,13 @@ namespace GeminiLab.Autoproj {
                 if (parameters.Length < 2) return;
 
                 string name = parameters[1];
-                ulong initv;
+                long initv;
 
                 if (parameters.Length == 2)
                     initv = 0;
-                else if (parameters.Length > 3 || !ulong.TryParse(parameters[2], out initv))
+                else if (parameters.Length > 3 || !long.TryParse(parameters[2], out initv))
                     return;
 
-                if (env.TryGetTypeLocal(name, out var type) && type == AutoprojEnvItemType.StaticCounter) return;
                 env.TryAddStaticCounter(name, initv);
             } else if (parameters[0] == "const") {
                 if (parameters.Length != 3) return;
@@ -123,7 +122,7 @@ namespace GeminiLab.Autoproj {
                 string[] param = parameters.Skip(3).ToArray();
 
                 if (!env.TryConvert(value, param, out var result)) return;
-                env.TrySetVariable(name, result);
+                env.TryAssign(name, result);
             }
         }
 

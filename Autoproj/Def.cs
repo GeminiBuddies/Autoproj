@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace GeminiLab.Autoproj {
     internal static class Def {
@@ -22,6 +20,6 @@ namespace GeminiLab.Autoproj {
 
 
         public const string DefaultTemplateExtension = ".autoproj";
-        public const string DefaultTemplateJsonExtension = ".autoproj.json";
+        public const string DefaultTemplateStoreExtension = ".autoproj.json";
     }
 }

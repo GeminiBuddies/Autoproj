@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 
 namespace GeminiLab.Autoproj {
-    internal partial class AutoprojEnv {
+    public partial class AutoprojEnv {
         public static AutoprojEnv GetRootEnv() {
             var rootEnv = new AutoprojEnv();
 
@@ -20,9 +20,10 @@ namespace GeminiLab.Autoproj {
             return rootEnv;
         }
 
+
         public static AutoprojEnv GetDirectoryEnv(AutoprojEnv parent, DirectoryInfo directory, CommandlineOptions options) {
             var dbPath = Path.Combine(directory.FullName, options.TemplateJsonExtension);
-            var rv = new AutoprojEnvSaved(parent, dbPath);
+            var rv = new AutoprojEnvStored(parent, dbPath);
 
             rv.TryAddConst("dirname", directory.Name);
             rv.TryAddConst("path", directory.FullName);
@@ -33,7 +34,7 @@ namespace GeminiLab.Autoproj {
         public static AutoprojEnv GetFileEnv(AutoprojEnv parent, FileInfo file, CommandlineOptions options) {
             var outputFullname = file.FullName.Substring(0, file.FullName.Length - options.TemplateExtension.Length);
             var dbPath = outputFullname + options.TemplateJsonExtension;
-            var rv = new AutoprojEnvSaved(parent, dbPath);
+            var rv = new AutoprojEnvStored(parent, dbPath);
             
             rv.TryAddConst("filename", file.Name);
             rv.TryAddConst("filefullname", file.FullName);

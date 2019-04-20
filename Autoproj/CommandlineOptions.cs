@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using CommandLine;
-using CommandLine.Text;
+﻿using CommandLine;
 
 namespace GeminiLab.Autoproj {
-    internal class CommandlineOptions {
+    public sealed class CommandlineOptions {
         [Option('p', "path", HelpText = "Working path.")]
         public string Path { get; set; } = null;
 
         [Option('e', "extension", HelpText = "Template extension.", Default = Def.DefaultTemplateExtension)]
         public string TemplateExtension { get; set; }
 
-        [Option('j', "json-extension", HelpText = "Template json storage extension.", Default = Def.DefaultTemplateJsonExtension)]
+        [Option('j', "json-extension", HelpText = "Template json storage extension.", Default = Def.DefaultTemplateStoreExtension)]
         public string TemplateJsonExtension { get; set; }
     }
 }
