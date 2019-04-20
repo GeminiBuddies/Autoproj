@@ -39,44 +39,46 @@ namespace GeminiLab.Autoproj {
         private static readonly Regex Reg = new Regex(@"<~(?<content>[^<~>]*)~>");
 
         public static void ProcessFile(FileInfo file, AutoprojEnv env, string outputfile) {
-            StreamReader sr = null;
-            try {
-                long line = 0;
-                long outputline = 0;
+            var sr = new StreamReader(file.OpenRead(), Encoding.UTF8);
+            var sw = outputfile != null ? new StreamWriter(new FileStream(outputfile, FileMode.Create, FileAccess.Write), new UTF8Encoding(false)) : null;
 
-                // as we know what we are doing...
-                // ReSharper disable AccessToModifiedClosure
-                env.TryAddFunction("line", any => line.ToString());
-                env.TryAddFunction("outputline", any => outputline.ToString());
-                // ReSharper restore AccessToModifiedClosure
+            ProcessText(env, sr, sw);
 
-                sr = new StreamReader(file.OpenRead(), Encoding.UTF8);
+            sw?.Close();
+            sr.Close();
+        }
 
-                var sb = new StringBuilder();
+        public static void ProcessText(AutoprojEnv env, TextReader reader, TextWriter writer) {
+            long ifln = 0, ofln = 0;
 
-                foreach (var l in sr.GetLines()) {
-                    ++line;
-                    if (l.Length > 6 && l.Substring(0, 3) == "<~~" && l.Substring(l.Length - 3, 3) == "~~>") {
+            // as we know what we are doing...
+            // ReSharper disable AccessToModifiedClosure
+            env.TryAddFunction("ifln", any => ifln.ToString());
+            env.TryAddFunction("ofln", any => ofln.ToString());
+            // ReSharper restore AccessToModifiedClosure
+
+            string l;
+            while ((l = reader.ReadLine()) != null) {
+                ++ifln;
+
+                if (l.Length > 6 && l.Substring(0, 3) == "<~~" && l.Substring(l.Length - 3, 3) == "~~>") {
+                    try {
                         handleCommand(l.Substring(3, l.Length - 6), env);
-                    } else {
-                        ++outputline;
-
-                        sb.AppendLine(Reg.Replace(l, match => matchEvaluator(match, env)));
+                    } catch (Exception) {
+                        // ignored
                     }
+                } else {
+                    ++ofln;
+
+                    string result;
+                    try {
+                        result = Reg.Replace(l, match => matchEvaluator(match, env));
+                    } catch (Exception) {
+                        --ofln; continue;
+                    }
+
+                    writer?.WriteLine(result);
                 }
-
-                sr.Close();
-
-                if (outputfile == null) return;
-
-                var sw = new StreamWriter(new FileStream(outputfile, FileMode.Create, FileAccess.Write), new UTF8Encoding(false));
-                sw.Write(sb.ToString());
-                sw.Close();
-            } catch (Exception ex) {
-                // todo: log here
-                return;
-            } finally {
-                sr?.Dispose();
             }
         }
 

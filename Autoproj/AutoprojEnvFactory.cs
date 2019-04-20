@@ -25,8 +25,8 @@ namespace GeminiLab.Autoproj {
             var dbPath = Path.Combine(directory.FullName, options.TemplateJsonExtension);
             var rv = new AutoprojEnvStored(parent, dbPath);
 
-            rv.TryAddConst("dirname", directory.Name);
-            rv.TryAddConst("path", directory.FullName);
+            rv.TryAddConst("cwdname", directory.Name);
+            rv.TryAddConst("cwdpath", directory.FullName);
 
             return rv;
         }
@@ -36,10 +36,10 @@ namespace GeminiLab.Autoproj {
             var dbPath = outputFullname + options.TemplateJsonExtension;
             var rv = new AutoprojEnvStored(parent, dbPath);
             
-            rv.TryAddConst("filename", file.Name);
-            rv.TryAddConst("filefullname", file.FullName);
-            rv.TryAddConst("outputname", file.Name.Substring(0, file.Name.Length - options.TemplateExtension.Length));
-            rv.TryAddConst("outputfullname", outputFullname);
+            rv.TryAddConst("ifname", file.Name);
+            rv.TryAddConst("ifpath", file.FullName);
+            rv.TryAddConst("ofname", file.Name.Substring(0, file.Name.Length - options.TemplateExtension.Length));
+            rv.TryAddConst("ofpath", outputFullname);
 
             return rv;
         }
