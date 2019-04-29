@@ -8,12 +8,12 @@
     <Authors>XXX</Authors>
     <Company>XXX</Company>
     <Product>XXX</Product>
-    <AssemblyVersion>0.9.3.18</AssemblyVersion>
-    <Copyright>Copyright © YYY 2017 - 2018</Copyright>
+    <AssemblyVersion>0.9.3.49</AssemblyVersion>
+    <Copyright>Copyright © YYY 2017 - 2019</Copyright>
     <FileVersion>0.9.3.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>0.9.3-pre-20180412-18</Version>
+    <Version>0.9.3-pre-20190430-49</Version>
     <PackageLicenseUrl>https://github.com/YYY/XXX/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/YYY/XXX/</PackageProjectUrl>
     <LangVersion>latest</LangVersion>
@@ -27,8 +27,8 @@
 </Project>
 
 <!-- 
-autoproj version: 0.9.0.0
+autoproj version: 0.9.1-b0
 input file: C:\Users\Gemini\source\repos\Autoproj\test\autoprojtest.csproj.autoproj
 output file: C:\Users\Gemini\source\repos\Autoproj\test\autoprojtest.csproj
-convert time: 2018/04/12,00:54:23
+convert time: 2019/04/30,03:52:45
 -->

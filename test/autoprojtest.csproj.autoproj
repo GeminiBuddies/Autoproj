@@ -28,7 +28,7 @@
 
 <!-- 
 autoproj version: <~ autoprojver ~>
-input file: <~ filefullname ~>
-output file: <~ outputfullname ~>
+input file: <~ ifpath ~>
+output file: <~ ofpath ~>
 convert time: <~ now yyyy/MM/dd,HH:mm:ss ~>
 -->

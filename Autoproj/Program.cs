@@ -1,15 +1,42 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
-using System.Reflection;
-using System.Text;
 
 using CommandLine;
 using CommandLine.Text;
 
+using GeminiLab.Core2.Logger;
+using GeminiLab.Core2.Logger.Appenders;
+
 namespace GeminiLab.Autoproj {
-    internal class Program { 
-        private void optMain(CommandlineOptions opt) {
+    internal class Program {
+        internal static LoggerContext LoggerContext;
+        internal static Logger Logger;
+
+        private static void logOptions(CommandlineOptions opt) {
+            Logger.Debug("parameters:");
+            Logger.Debug($"  path: {opt.Path}");
+            Logger.Debug($"  verbose: {opt.Verbose}, quiet: {opt.Quiet}");
+            Logger.Debug($"  template extension: {opt.TemplateExtension}");
+            Logger.Debug($"  template json extension: {opt.TemplateJsonExtension}");
+        }
+
+        private static void optMain(CommandlineOptions opt) {
+            LoggerContext = new LoggerContext();
+            LoggerContext.AddAppender("console", new ColorfulConsoleAppender());
+            LoggerContext.AddCategory("default");
+
+            if (opt.Verbose) {
+                LoggerContext.Connect("default", "console");
+            } else {
+                LoggerContext.Connect("default", "console",
+                    opt.Quiet ? Filters.DenyFilter : Filters.Threshold(Logger.LevelWarn));
+            }
+
+            Logger = LoggerContext.GetLogger("default");
+
+            Logger.Debug("logger initialized.");
+            logOptions(opt);
+
             Processor.ProcessDirectory(new DirectoryInfo(opt.Path ?? "."), AutoprojEnv.GetRootEnv(), opt);
         }
 
@@ -21,26 +48,24 @@ namespace GeminiLab.Autoproj {
                 AddDashesToOption = true,
                 MaximumDisplayWidth = 120
             };
-            help.AddPreOptionsLine(" ");
+            help.AddPreOptionsLine("");
             help.AddPreOptionsLine(Def.OpenSourceInfo);
-            help.AddOptions(res);
+            help.AddOptions(_res);
             help.AddPostOptionsLine("");
 
             return help;
         }
 
-        private static ParserResult<CommandlineOptions> res;
+        private static ParserResult<CommandlineOptions> _res;
 
         public static void Main(string[] args) {
-            var program = new Program();
-
             var parser = new Parser(settings => {
                 settings.HelpWriter = null;
                 settings.EnableDashDash = true;
             });
 
-            res = parser.ParseArguments<CommandlineOptions>(args);
-            res.WithParsed(program.optMain).WithNotParsed(errs => {
+            _res = parser.ParseArguments<CommandlineOptions>(args);
+            _res.WithParsed(optMain).WithNotParsed(errs => {
                 foreach (var e in errs) {
                     if (e is HelpRequestedError) {
                         Console.WriteLine(getHelpString());

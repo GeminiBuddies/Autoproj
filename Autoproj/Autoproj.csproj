@@ -11,7 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.4.3" />
-    <PackageReference Include="GeminiLab.Core2" Version="0.9.3-pre-20181005-16" />
+    <PackageReference Include="GeminiLab.Core2" Version="0.9.3-pre-20190429-56" />
+    <PackageReference Include="GeminiLab.Core2.Logger" Version="0.9.3-pre-20190429-56" />
   </ItemGroup>
 
 </Project>

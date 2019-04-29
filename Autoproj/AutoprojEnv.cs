@@ -3,13 +3,18 @@ using System.Collections.Generic;
 
 namespace GeminiLab.Autoproj {
     public partial class AutoprojEnv {
-        protected readonly Dictionary<string, AutoprojEnvItem> items;
+        protected readonly Dictionary<string, IAutoprojEnvItem> items;
         protected readonly Dictionary<string, string> initValues;
+
+        protected static int counter = 0x400;
+        protected static object counterLock = new object();
+
+        protected string id;
 
         public AutoprojEnv Parent { get; }
         public AutoprojEnv Root { get; }
 
-        public AutoprojEnv() : this(null) { }
+        public AutoprojEnv() : this(null) {}
 
         public AutoprojEnv(AutoprojEnv parent) {
             if (parent == null) {
@@ -20,16 +25,24 @@ namespace GeminiLab.Autoproj {
                 Root = parent.Root;
             }
 
-            items = new Dictionary<string, AutoprojEnvItem>();
+            items = new Dictionary<string, IAutoprojEnvItem>();
             initValues = new Dictionary<string, string>();
+
+            lock (counterLock) {
+                id = $"{counter++:X6}";
+            }
+
+            Program.Logger.Trace($"env {id} created.");
         }
 
 
         public void Begin() {
+            Program.Logger.Trace($"env {id} begin.");
             DoBegin();
         }
 
         public void End() {
+            Program.Logger.Trace($"env {id} end.");
             DoEnd();
         }
 
@@ -47,14 +60,17 @@ namespace GeminiLab.Autoproj {
 
             if (items.TryGetValue(key, out var item)) {
                 try {
-                    if (item.AcceptParameters) {
-                        var funcResult = item.Invoke(parameters);
-                        result = funcResult;
+                    switch (item) {
+                    case IAutoprojEnvParameterizedItem parameterizedItem: 
+                        result = parameterizedItem.Invoke(parameters);
+                         return true;
+                    case IAutoprojEnvNotParameterizedItem _ when parameters.Length > 0:
+                        return false;
+                    case IAutoprojEnvNotParameterizedItem notParameterizedItem:
+                        result = notParameterizedItem.Get();
                         return true;
-                    } else {
-                        if (parameters.Length > 0) return false;
-                        result = item.Get();
-                        return true;
+                    default:
+                        return false;
                     }
                 } catch (Exception ex) {
                     result = ex.Message;
@@ -65,53 +81,40 @@ namespace GeminiLab.Autoproj {
             return Parent != null && Parent.TryConvert(key, parameters, out result);
         }
 
-        public bool TryAdd(string key, AutoprojEnvItem item) {
+        public bool TryAdd(string key, IAutoprojEnvItem item) {
             if (!items.ContainsKey(key)) {
-                if (item.UseStorage && initValues.TryGetValue(key, out var storage)) {
-                    item.Load(storage);
+                if (item is IAutoprojEnvPersistenceItem persistenceItem && initValues.TryGetValue(key, out var storage)) {
+                    persistenceItem.Load(storage);
                 }
 
                 items.Add(key, item);
                 return true;
-            } else {
-                return false;
-            }
-        }
-
-        public void TryAddConst(string key, AutoprojEnvConst val) {
-            TryAdd(key, val);
-        }
-
-        public void TryAddFunction(string key, AutoprojEnvFunction func) {
-            TryAdd(key, func);
-        }
-
-        public void TryAddFunction(string key, Func<string[], string> func) {
-            TryAdd(key, new AutoprojEnvFunction(func));
-        }
-
-        public void TryAddCounter(string key, long initv = 0) {
-            TryAdd(key, new AutoprojEnvCounter(initv));
-        }
-
-        public void TryAddStaticCounter(string key, long initv = 0) {
-            TryAdd(key, new AutoprojEnvStaticCounter(initv));
-        }
-
-        public void TryAddVariable(string key, string value) {
-            TryAdd(key, new AutoprojEnvVar(value));
-        }
-
-        public bool TryAssign(string key, string value) {
-            if (items.TryGetValue(key, out var item)) {
-                if (!item.CanAssign) return false;
-
-                item.Assign(value);
-            } else {
-                TryAddVariable(key, value);
             }
 
             return false;
+        }
+
+        public bool TryAddConst(string key, AutoprojEnvConst val) => TryAdd(key, val);
+
+        public bool TryAddFunction(string key, AutoprojEnvFunction func) => TryAdd(key, func);
+
+        public bool TryAddFunction(string key, Func<string[], string> func) => TryAdd(key, new AutoprojEnvFunction(func));
+
+        public bool TryAddCounter(string key, long initv = 0) => TryAdd(key, new AutoprojEnvCounter(initv));
+
+        public bool TryAddStaticCounter(string key, long initv = 0) => TryAdd(key, new AutoprojEnvStaticCounter(initv));
+
+        public bool TryAddVariable(string key, string value) => TryAdd(key, new AutoprojEnvVar(value));
+
+        public bool TryAssign(string key, string value) {
+            if (items.TryGetValue(key, out var item)) {
+                if (!(item is IAutoprojEnvAssignableItem assignableItem)) return false;
+
+                assignableItem.Assign(value);
+                return true;
+            }
+
+            return TryAddVariable(key, value);
         }
     }
 }

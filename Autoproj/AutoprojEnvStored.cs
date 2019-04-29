@@ -1,13 +1,13 @@
-﻿using GeminiLab.Core2.ML.Json;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
+using GeminiLab.Core2.ML.Json;
+
 namespace GeminiLab.Autoproj {
     class AutoprojEnvStored : AutoprojEnv {
-        private readonly string _storageFile = null;
+        private readonly string _storageFile;
 
         public AutoprojEnvStored(AutoprojEnv parent, string storagePath) : base(parent) {
             var dbFile = new FileInfo(_storageFile = storagePath);
@@ -41,7 +41,7 @@ namespace GeminiLab.Autoproj {
             }
         }
 
-        private void saveItemsToWriter(IEnumerable<KeyValuePair<string, AutoprojEnvItem>> savingItems, TextWriter writer) {
+        private static void saveItemsToWriter(Dictionary<string, IAutoprojEnvPersistenceItem> savingItems, TextWriter writer) {
             var scs = new JsonObject();
             foreach (var (key, item) in savingItems) scs.Append(key, new JsonString(item.Save()));
 
@@ -52,7 +52,14 @@ namespace GeminiLab.Autoproj {
         }
 
         protected override void DoEnd() {
-            var itemsToSave = items.Where(x => x.Value.UseStorage).ToList();
+            var itemsToSave = new Dictionary<string, IAutoprojEnvPersistenceItem>();
+
+            foreach (var (key, item) in items) {
+                if (item is IAutoprojEnvPersistenceItem persistenceItem) {
+                    itemsToSave[key] = persistenceItem;
+                }
+            }
+
             if (!itemsToSave.Any()) return;
 
             var sw = new StreamWriter(new FileStream(_storageFile, FileMode.Create));

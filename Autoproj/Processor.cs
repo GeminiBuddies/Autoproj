@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using GeminiLab.Core2;
+using GeminiLab.Core2.Logger;
 
 namespace GeminiLab.Autoproj {
     internal static class Processor {
         public static void ProcessDirectory(DirectoryInfo directory, AutoprojEnv parentEnv, CommandlineOptions options) {
+            Program.Logger.Info($"entering directory '{directory.FullName}'...");
+
             var thisEnv = AutoprojEnv.GetDirectoryEnv(parentEnv, directory, options);
             thisEnv.Begin();
 
@@ -20,7 +21,7 @@ namespace GeminiLab.Autoproj {
                 if (file.Extension == options.TemplateExtension && file.Name != options.TemplateExtension) {
                     string filePath = file.FullName;
                     string outputPath = filePath.Substring(0, filePath.Length - options.TemplateExtension.Length);
-                    string storagePath = outputPath + options.TemplateJsonExtension;
+                    // string storagePath = outputPath + options.TemplateJsonExtension;
 
                     var fileEnv = AutoprojEnv.GetFileEnv(thisEnv, file, options);
                     fileEnv.Begin();
@@ -34,11 +35,15 @@ namespace GeminiLab.Autoproj {
             }
 
             thisEnv.End();
+
+            Program.Logger.Info($"leaving directory '{directory.FullName}'...");
         }
 
         private static readonly Regex Reg = new Regex(@"<~(?<content>[^<~>]*)~>");
 
         public static void ProcessFile(FileInfo file, AutoprojEnv env, string outputfile) {
+            Program.Logger.Info($"processing file '{_currentFilename = file.FullName}'...");
+
             var sr = new StreamReader(file.OpenRead(), Encoding.UTF8);
             var sw = outputfile != null ? new StreamWriter(new FileStream(outputfile, FileMode.Create, FileAccess.Write), new UTF8Encoding(false)) : null;
 
@@ -48,33 +53,41 @@ namespace GeminiLab.Autoproj {
             sr.Close();
         }
 
+        private static string _currentFilename;
+        private static long _ifln, _ofln;
+
         public static void ProcessText(AutoprojEnv env, TextReader reader, TextWriter writer) {
-            long ifln = 0, ofln = 0;
+            _ifln = 0; _ofln = 0;
 
             // as we know what we are doing...
             // ReSharper disable AccessToModifiedClosure
-            env.TryAddFunction("ifln", any => ifln.ToString());
-            env.TryAddFunction("ofln", any => ofln.ToString());
+            env.TryAddFunction("ifln", any => $"{_ifln}");
+            env.TryAddFunction("ofln", any => $"{_ofln}");
             // ReSharper restore AccessToModifiedClosure
 
             string l;
             while ((l = reader.ReadLine()) != null) {
-                ++ifln;
+                ++_ifln;
 
                 if (l.Length > 6 && l.Substring(0, 3) == "<~~" && l.Substring(l.Length - 3, 3) == "~~>") {
+                    var command = l.Substring(3, l.Length - 6).Trim();
+
                     try {
-                        handleCommand(l.Substring(3, l.Length - 6), env);
-                    } catch (Exception) {
-                        // ignored
+                        handleCommand(command, env);
+                    } catch (Exception ex) {
+                        Program.Logger.Error($"failed to handle command '{command}' at {_currentFilename}:line {_ifln}, {ex.GetType().FullName}: {ex.Message}.");
+                        Program.Logger.Debug($"stack trace is {ex.StackTrace}.");
                     }
                 } else {
-                    ++ofln;
+                    ++_ofln;
 
                     string result;
                     try {
                         result = Reg.Replace(l, match => matchEvaluator(match, env));
-                    } catch (Exception) {
-                        --ofln; continue;
+                    } catch (Exception ex) {
+                        Program.Logger.Error($"failed to translate line '{l}' at {_currentFilename}:line {_ifln}, {ex.GetType().FullName}: {ex.Message}, this line is ignored.");
+                        Program.Logger.Debug($"stack trace is {ex.StackTrace}.");
+                        --_ofln; continue;
                     }
 
                     writer?.WriteLine(result);
@@ -83,7 +96,7 @@ namespace GeminiLab.Autoproj {
         }
 
         private static void handleCommand(string command, AutoprojEnv env) {
-            var parameters = command.Trim().Split().RemoveEmpty().ToArray();
+            var parameters = command.Split().RemoveEmpty().ToArray();
 
             if (parameters[0] == "counter") {
                 if (parameters.Length < 2) return;
@@ -125,7 +138,14 @@ namespace GeminiLab.Autoproj {
 
                 if (!env.TryConvert(value, param, out var result)) return;
                 env.TryAssign(name, result);
+            } else if (parameters[0] == "raise") {
+                throw new Exception(parameters.Skip(1).JoinBy(" "));
+            } else {
+                Program.Logger.Warn($"unknown command '{command}' at {_currentFilename}:line {_ifln}, continue anyway.");
+                return;
             }
+
+            Program.Logger.Debug($"command '{command}' successfully handled.");
         }
 
         private static string matchEvaluator(Match match, AutoprojEnv env) {
@@ -135,10 +155,12 @@ namespace GeminiLab.Autoproj {
             if (parameters.Length == 0) return "";
 
             if (env.TryConvert(parameters[0], parameters.Skip(1).ToArray(), out string result)) {
+                Program.Logger.Debug($"'{total}' at {_currentFilename}:line {_ifln} evaluates to '{result}'");
                 return result;
             }
 
-            return parameters.Length == 1 ? parameters[0] : total;
+            Program.Logger.Warn($"no method to evaluate '{total}' at {_currentFilename}:line {_ifln}, leave it as it is.");
+            return total;
         }
     }
 }
