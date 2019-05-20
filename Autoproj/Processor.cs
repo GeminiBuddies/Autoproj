@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using GeminiLab.Core2;
 using GeminiLab.Core2.Logger;
+using GeminiLab.Core2.Sugar;
 
 namespace GeminiLab.Autoproj {
     internal static class Processor {
@@ -39,13 +40,13 @@ namespace GeminiLab.Autoproj {
             Program.Logger.Info($"leaving directory '{directory.FullName}'...");
         }
 
-        private static readonly Regex Reg = new Regex(@"<~(?<content>[^<~>]*)~>");
+        private static readonly Regex Reg = new Regex(@"<~(?<content>.*?)~>");
 
-        public static void ProcessFile(FileInfo file, AutoprojEnv env, string outputfile) {
+        public static void ProcessFile(FileInfo file, AutoprojEnv env, string outputFilename) {
             Program.Logger.Info($"processing file '{_currentFilename = file.FullName}'...");
 
             var sr = new StreamReader(file.OpenRead(), Encoding.UTF8);
-            var sw = outputfile != null ? new StreamWriter(new FileStream(outputfile, FileMode.Create, FileAccess.Write), new UTF8Encoding(false)) : null;
+            var sw = outputFilename != null ? new StreamWriter(new FileStream(outputFilename, FileMode.Create, FileAccess.Write), new UTF8Encoding(false)) : null;
 
             ProcessText(env, sr, sw);
 
@@ -129,6 +130,13 @@ namespace GeminiLab.Autoproj {
                 string value = parameters[2];
 
                 env.TryAddConst(name, value);
+            } else if (parameters[0] == "static_var") {
+                if (parameters.Length != 2 && parameters.Length != 3) return;
+
+                string name = parameters[1];
+                string value = parameters.Length == 3 ? parameters[2] : "";
+
+                env.TryAddStaticVar(name, value);
             } else if (parameters[0] == "assign") {
                 if (parameters.Length < 3) return;
 

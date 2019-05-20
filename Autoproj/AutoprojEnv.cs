@@ -106,6 +106,8 @@ namespace GeminiLab.Autoproj {
 
         public bool TryAddVariable(string key, string value) => TryAdd(key, new AutoprojEnvVar(value));
 
+        public bool TryAddStaticVar(string key, string value) => TryAdd(key, new AutoprojEnvStaticVar(value));
+
         public bool TryAssign(string key, string value) {
             if (items.TryGetValue(key, out var item)) {
                 if (!(item is IAutoprojEnvAssignableItem assignableItem)) return false;

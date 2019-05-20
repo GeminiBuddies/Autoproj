@@ -22,7 +22,8 @@ namespace GeminiLab.Autoproj {
 
         private static void optMain(CommandlineOptions opt) {
             LoggerContext = new LoggerContext();
-            LoggerContext.AddAppender("console", new ColorfulConsoleAppender());
+            // ReSharper disable once StringLiteralTypo
+            LoggerContext.AddAppender("console", new ColorfulConsoleAppender(Layout.ColorfulTimedConsoleLayout("yyyy/MM/dd HH:mm:ss.ffff")));
             LoggerContext.AddCategory("default");
 
             if (opt.Verbose) {
