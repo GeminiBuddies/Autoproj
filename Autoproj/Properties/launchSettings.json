@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Autoproj": {
+      "commandName": "Project",
+      "commandLineArgs": "-c -f HH:mm:ss.fffff -p c:\\Users\\Gemini\\source\\repos\\Autoproj\\test\\"
+    }
+  }
+}

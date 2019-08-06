@@ -1,4 +1,3 @@
-<~~ static_counter build_cnt ~~>
-<~~ const version 0.9.3 ~~>
-
-<~~ assign build_cnt_var build_cnt ~~>
+<~!def b 444~>
+<~! def unitest 万国码テスト ~>
+<~b~>

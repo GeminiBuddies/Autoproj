@@ -1,6 +1,0 @@
-<~~ static_counter a ~~>
-echo "<~ now ~>"
-echo "<~ a ~>#<~ a ~>#<~ a ~>"
-echo "<~ ifpath ~>"
-echo "<~ ofname ~>"
-echo "<~ ofpath ~>"

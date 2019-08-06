@@ -1,5 +1,6 @@
 {
-    "values": {
-        "build_cnt": "60"
+    "variable": {
+        "b": "444",
+        "unitest": "万国码テスト"
     }
 }

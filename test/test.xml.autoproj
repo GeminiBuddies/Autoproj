@@ -1,0 +1,5 @@
+<~! def a 123123 ~>
+<root>
+    <sth a="<~a~>" b="<~b~>" i="<~if~>" o="<~ofpath~>"/>
+    <!-- <~unitest~> -->
+</root>
