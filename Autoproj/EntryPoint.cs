@@ -84,13 +84,16 @@ namespace GeminiLab.Autoproj {
                 logger.Info("Logger initialized.");
 
                 var varComp = new VariableComponent();
+                var counterComp = new CounterComponent();
 
                 var rootEnv = new ProcessorEnvironment(null);
                 if (predefined != null) rootEnv.AddEvaluator(new PredefinedEvaluator(predefined));
                 rootEnv.AddEvaluator(varComp);
+                rootEnv.AddEvaluator(counterComp);
 
                 var processorConfig = new ProcessorConfig(suffix, storage, logger, rootEnv);
                 processorConfig.AddCommandHandler(varComp, "def");
+                processorConfig.AddCommandHandler(counterComp, "counter", "static_counter");
                 DirectoryProcessor.Process(new DirectoryInfo(path), processorConfig.RootEnv, processorConfig);
 
                 logger.Info("All jobs done. closing logger...");

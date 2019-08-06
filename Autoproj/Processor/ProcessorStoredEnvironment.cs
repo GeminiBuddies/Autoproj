@@ -39,7 +39,7 @@ namespace GeminiLab.Autoproj.Processor {
                                 categoryStorage[key] = (bool)boolean;
                                 break;
                             case JsonNumber number:
-                                categoryStorage[key] = number.IsFloat ? number.ValueFloat : number.ValueInt;
+                                categoryStorage[key] = number.IsFloat ? number.ValueFloat : (object)number.ValueInt;
                                 break;
                             case JsonNull _:
                                 categoryStorage[key] = null;
