@@ -3,10 +3,11 @@ namespace GeminiLab.Autoproj {
         public static readonly string HelpTextHeader =
             $"{Metadata.ProgramName} ver. {Metadata.VersionCodeName}({Metadata.VersionString})\n" +
             $"{Metadata.CopyrightInfo}\n" +
-            $"{Metadata.OpenSourceInfo}\n";
+            $"{Metadata.OpenSourceInfo}\n" +
+            $"{Metadata.ProjectSiteInfo}\n";
 
-        public static readonly string HelpTextBody = $@"
-Usage: autoproj [OPTIONS] [-- key1=value1 [key2=value2 ...]]
+        public static readonly string HelpTextBody = 
+$@"Usage: autoproj [OPTIONS] [-- key1=value1 [key2=value2 ...]]
 
 OPTIONS:
     -p path     --path path
@@ -44,6 +45,6 @@ key1=value1 [key2=value2 ...]:
     Predefined constants.
                                                                                                     .";
 
-        public static readonly string HelpText = HelpTextHeader + HelpTextBody;
+        public static readonly string HelpText = HelpTextHeader + "\n" + HelpTextBody;
     }
 }

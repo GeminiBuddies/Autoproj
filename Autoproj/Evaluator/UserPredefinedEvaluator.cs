@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace GeminiLab.Autoproj.Evaluator {
-    public class PredefinedEvaluator : DictionaryEvaluator {
+    public class UserPredefinedEvaluator : DictionaryEvaluator {
         private static Dictionary<string, string> parsePredefined(params string[] predefined) {
             var dict = new Dictionary<string, string>();
 
@@ -15,6 +15,6 @@ namespace GeminiLab.Autoproj.Evaluator {
             return dict;
         }
 
-        public PredefinedEvaluator(params string[] predefined) : base(parsePredefined(predefined)) { }
+        public UserPredefinedEvaluator(params string[] predefined) : base(parsePredefined(predefined)) { }
     }
 }

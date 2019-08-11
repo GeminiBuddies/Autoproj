@@ -8,7 +8,7 @@ namespace GeminiLab.Autoproj.Processor {
             var logger = options.Logger;
             logger.Info($"Processing file '{file.FullName}'...");
 
-            // StreamReader/Writers dispose inner Streams when disposing
+            // As StreamReader/Writers dispose inner Streams when disposing...
             using (var sr = new StreamReader(file.OpenRead(), Encoding.UTF8)) { 
                 using (var sw = output == null ? TextWriter.Null : new StreamWriter(output.OpenWrite())) {
                     sw.NewLine = "\n";

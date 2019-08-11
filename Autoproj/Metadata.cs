@@ -6,7 +6,8 @@ namespace GeminiLab.Autoproj {
         public static readonly string ProgramName = "Autoproj";
         public static readonly string Author = "Benjamin P.M. Lovegood (a.k.a. aarkegz) @ Gemini Laboratory";
         public static readonly string RepositoryAddress = "https://github.com/GeminiLab/Autoproj";
-        public static readonly string OpenSourceInfo = $"Open source under BSD 3-Clause License. See {RepositoryAddress} for more information.";
+        public static readonly string OpenSourceInfo = $"Open source under BSD 3-Clause License.";
+        public static readonly string ProjectSiteInfo = $"See {RepositoryAddress} for more information.";
 
         public static readonly string VersionString = ((Func<Assembly, string>)(ass => {
             var informationalVersion = ass.GetCustomAttribute<AssemblyInformationalVersionAttribute>();

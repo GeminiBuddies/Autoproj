@@ -3,7 +3,7 @@
 ## 0
 - [x] Variable component.
 - [x] Counter component.
-- [ ] More predefined evaluator.
+- [x] More predefined evaluator.
 
 ## 1
 - [ ] Better environment storage. (Optional non-persistent storage)

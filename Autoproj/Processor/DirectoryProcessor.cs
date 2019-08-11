@@ -41,7 +41,7 @@ namespace GeminiLab.Autoproj.Processor {
 
             thisEnv.End();
 
-            logger.Info($"Leaving directory '{directory.FullName}'...");
+            // logger.Info($"Leaving directory '{directory.FullName}'...");
         }
     }
 }
