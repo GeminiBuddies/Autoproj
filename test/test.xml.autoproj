@@ -2,4 +2,5 @@
 <root>
     <sth a="<~a~>" b="<~b~>" c="<~c~>" i="<~if~>" o="<~ofpath~>"/>
     <!-- <~unitest~> -->
+    <time><~ now "yyyy-MM-dd HH:mm" ~></time>
 </root>

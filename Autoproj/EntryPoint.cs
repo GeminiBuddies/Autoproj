@@ -86,7 +86,7 @@ namespace GeminiLab.Autoproj {
                 var processorConfig = new ProcessorConfig(suffix, storage, logger, rootEnv);
 
                 rootEnv.AddEvaluator(new UserPredefinedEvaluator(predefined ?? Array.Empty<string>()));
-                rootEnv.AddEvaluator(new AutoprojPredefinedEvaluator());
+                rootEnv.AddEvaluator(new SystemPredefinedEvaluator());
                 rootEnv.AddEvaluator(varComp);
                 rootEnv.AddEvaluator(counterComp);
 
