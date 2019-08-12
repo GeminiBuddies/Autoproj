@@ -1,7 +1,14 @@
 using System.Collections.Generic;
 using GeminiLab.Autoproj.Evaluators;
+using Storage = System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, System.Tuple<object, bool>>>;
+using StorageIns = System.Collections.Generic.Dictionary<string, System.Collections.Generic.IDictionary<string, System.Tuple<object, bool>>>;
 
 namespace GeminiLab.Autoproj.Processors {
+    public class ProcessorEnvironmentStorageItem {
+        public object Value;
+        public bool Persistent;
+    }
+
     public class ProcessorEnvironment {
         protected ProcessorEnvironment parent;
 
@@ -9,6 +16,8 @@ namespace GeminiLab.Autoproj.Processors {
             this.parent = parent;
         }
 
+
+        // evaluator management
         protected IList<IExpressionEvaluator> evaluators = new List<IExpressionEvaluator>();
 
         public virtual void AddEvaluator(IExpressionEvaluator evaluator) {
@@ -29,38 +38,43 @@ namespace GeminiLab.Autoproj.Processors {
         public virtual bool TryEvaluate(out string result, string command, params string[] param) =>
             TryEvaluate(out result, this, command, param);
 
-        protected IDictionary<string, IDictionary<string, object>> storage = new Dictionary<string, IDictionary<string, object>>();
+        // storage management
+        protected IDictionary<string, IDictionary<string, ProcessorEnvironmentStorageItem>> storage
+            = new Dictionary<string, IDictionary<string, ProcessorEnvironmentStorageItem>>();
 
-        public virtual bool TryFindStorage<T>(string category, string key, out ProcessorEnvironmentStorageItem<T> item) {
-            bool rv = false;
+        public virtual bool StorageTryFind<T>(string category, string key, out ProcessorEnvironmentStorageEntry<T> entry) {
+            entry = null;
+            if (!storage.TryGetValue(category, out var categoryStorage)) return false;
+            if (!categoryStorage.TryGetValue(key, out var item)) return false;
 
-            if (storage.TryGetValue(category, out var categoryStorage)) {
-                if (categoryStorage.TryGetValue(key, out _)) rv = true;
-            }
-
-            item = new ProcessorEnvironmentStorageItem<T>(this, categoryStorage, key);
-            return rv;
-        }
-
-        public virtual bool TryFindStorageRecursively<T>(string category, string key, out ProcessorEnvironmentStorageItem<T> item) {
-            if (!storage.TryGetValue(category, out var categoryStorage) || !categoryStorage.TryGetValue(key, out _)) {
-                if (parent != null) return parent.TryFindStorageRecursively(category, key, out item);
-
-                item = new ProcessorEnvironmentStorageItem<T>(this, null, key);
-                return false;
-
-            }
-
-            item = new ProcessorEnvironmentStorageItem<T>(this, categoryStorage, key);
+            entry = new ProcessorEnvironmentStorageEntry<T>(this, item);
             return true;
         }
 
-        public virtual ProcessorEnvironmentStorageItem<T> OpenStorage<T>(string category, string key) {
+        public virtual bool StorageTryFindRecursively<T>(string category, string key, out ProcessorEnvironmentStorageEntry<T> entry) {
+            if (StorageTryFind(category, key, out entry)) return true;
+            if (parent != null) return parent.StorageTryFindRecursively<T>(category, key, out entry);
+
+            entry = null;
+            return false;
+        }
+
+        public virtual ProcessorEnvironmentStorageEntry<T> StorageOpenOrCreate<T>(string category, string key) =>
+            StorageOpenOrCreate<T>(category, key, default, false);
+
+        public virtual ProcessorEnvironmentStorageEntry<T> StorageOpenOrCreate<T>(string category, string key, T defaultValue) =>
+            StorageOpenOrCreate<T>(category, key, defaultValue, false);
+
+        public virtual ProcessorEnvironmentStorageEntry<T> StorageOpenOrCreate<T>(string category, string key, T defaultValue, bool persistent) {
             if (!storage.TryGetValue(category, out var categoryStorage)) {
-                storage[category] = categoryStorage = new Dictionary<string, object>();
+                storage[category] = categoryStorage = new Dictionary<string, ProcessorEnvironmentStorageItem>();
             }
 
-            return new ProcessorEnvironmentStorageItem<T>(this, categoryStorage, key);
+            if (!categoryStorage.TryGetValue(key, out var item)) {
+                categoryStorage[key] = item = new ProcessorEnvironmentStorageItem { Value = defaultValue, Persistent = persistent };
+            }
+
+            return new ProcessorEnvironmentStorageEntry<T>(this, item);
         }
 
         public virtual void Begin() { }

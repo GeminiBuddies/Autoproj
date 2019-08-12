@@ -27,22 +27,22 @@ namespace GeminiLab.Autoproj.Processors {
                     foreach (var (category, jsonValue) in obj.Values) {
                         if (!(jsonValue is JsonObject dict)) continue;
 
-                        if (!storage.ContainsKey(category)) storage[category] = new Dictionary<string, object>();
+                        if (!storage.ContainsKey(category)) storage[category] = new Dictionary<string, ProcessorEnvironmentStorageItem>();
                         var categoryStorage = storage[category];
 
                         foreach (var (key, value) in dict.Values) {
                             switch (value) {
                             case JsonString str:
-                                categoryStorage[key] = (string)str;
+                                categoryStorage[key] = new ProcessorEnvironmentStorageItem { Value = (string)str, Persistent = true };
                                 break;
                             case JsonBool boolean:
-                                categoryStorage[key] = (bool)boolean;
+                                categoryStorage[key] = new ProcessorEnvironmentStorageItem { Value = (bool)boolean, Persistent = true };
                                 break;
                             case JsonNumber number:
-                                categoryStorage[key] = number.IsFloat ? number.ValueFloat : (object)number.ValueInt;
+                                categoryStorage[key] = new ProcessorEnvironmentStorageItem { Value = number.IsFloat ? number.ValueFloat : (object)number.ValueInt, Persistent = true };
                                 break;
                             case JsonNull _:
-                                categoryStorage[key] = null;
+                                categoryStorage[key] = new ProcessorEnvironmentStorageItem { Value = null, Persistent = true };
                                 break;
                             }
                         }
@@ -58,7 +58,9 @@ namespace GeminiLab.Autoproj.Processors {
                 var obj = new JsonObject();
 
                 foreach (var (key, value) in dict) {
-                    switch (value) {
+                    if (!value.Persistent) continue;
+
+                    switch (value.Value) {
                     case string str:
                         obj[key] = str;
                         break;

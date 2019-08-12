@@ -6,8 +6,8 @@
     <RootNamespace>GeminiLab.Autoproj</RootNamespace>
     <StartupObject>GeminiLab.Autoproj.EntryPoint</StartupObject>
     <FileVersion>1.0.0.0</FileVersion>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <Version>1.0.0-b0</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <Version>1.0.1-b1</Version>
   </PropertyGroup>
 
   <ItemGroup>

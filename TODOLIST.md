@@ -6,7 +6,7 @@
 - [x] More predefined evaluator.
 
 ## 1
-- [ ] Better environment storage. (Optional non-persistent storage)
+- [x] Better environment storage. (Optional non-persistent storage)
 
 # ver 1.1
 

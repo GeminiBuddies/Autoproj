@@ -11,8 +11,7 @@ namespace GeminiLab.Autoproj.Components {
         private const string Category = "variable";
 
         public bool TryEvaluate(out string result, ProcessorEnvironment env, string command, params string[] param) {
-            if (env.TryFindStorageRecursively<string>(Category, command, out var item) && item.Exists) {
-                // item.Exists in condition seems to be redundant, but just keep it here
+            if (env.StorageTryFindRecursively<string>(Category, command, out var item)) {
                 result = item.Value;
                 return true;
             }
@@ -26,7 +25,7 @@ namespace GeminiLab.Autoproj.Components {
                 var key = param[0];
                 var value = param.Length >= 2 ? param[1] : "";
 
-                env.OpenStorage<string>(Category, key).Value = value;
+                env.StorageOpenOrCreate<string>(Category, key).Value = value;
             }
         }
     }

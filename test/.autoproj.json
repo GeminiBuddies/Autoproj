@@ -1,9 +1,5 @@
 {
-    "variable": {
-        "unitest": "万国码テスト"
-    },
     "counter": {
-        "b": 22,
-        "c": 1
+        "b": 3
     }
 }
