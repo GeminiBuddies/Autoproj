@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using GeminiLab.Autoproj.Processor;
+using GeminiLab.Autoproj.Processors;
 
-namespace GeminiLab.Autoproj.Evaluator {
+namespace GeminiLab.Autoproj.Evaluators {
     public interface IExpressionEvaluator {
         bool TryEvaluate(out string result, ProcessorEnvironment env, string command, params string[] param);
     }

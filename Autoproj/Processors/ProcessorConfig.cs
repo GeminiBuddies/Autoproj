@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
-using GeminiLab.Autoproj.Handler;
+using GeminiLab.Autoproj.Handlers;
 using GeminiLab.Core2.Logger;
 
-namespace GeminiLab.Autoproj.Processor {
+namespace GeminiLab.Autoproj.Processors {
     // replace it with a Record class as soon as C# 8.0 is available
     public class ProcessorConfig {
         public string TemplateSuffix { get; }

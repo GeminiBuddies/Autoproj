@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using GeminiLab.Autoproj.Processor;
+using GeminiLab.Autoproj.Processors;
 
-namespace GeminiLab.Autoproj.Evaluator {
+namespace GeminiLab.Autoproj.Evaluators {
     public class FileInfoEvaluator : IExpressionEvaluator {
         public bool TryEvaluate(out string result, ProcessorEnvironment env, string command, params string[] param) {
             switch (command) {

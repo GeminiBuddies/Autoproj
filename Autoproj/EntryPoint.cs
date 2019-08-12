@@ -1,18 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using GeminiLab.Autoproj.Component;
-using GeminiLab.Autoproj.Evaluator;
-using GeminiLab.Autoproj.Processor;
+
 using GeminiLab.Core2.GetOpt;
 using GeminiLab.Core2.Logger;
 using GeminiLab.Core2.Logger.Appenders;
 using GeminiLab.Core2.Logger.Layouts;
-using GeminiLab.Core2.Sugar;
+
+using GeminiLab.Autoproj.Components;
+using GeminiLab.Autoproj.Evaluators;
+using GeminiLab.Autoproj.Processors;
 
 namespace GeminiLab.Autoproj {
     static class EntryPoint {
@@ -97,7 +93,7 @@ namespace GeminiLab.Autoproj {
                 processorConfig.AddCommandHandler(varComp, "def");
                 processorConfig.AddCommandHandler(counterComp, "counter", "static_counter");
 
-                DirectoryProcessor.Process(new DirectoryInfo(path), processorConfig.RootEnv, processorConfig);
+                Processor.ProcessDirectory(new DirectoryInfo(path), processorConfig.RootEnv, processorConfig);
 
                 logger.Info("All jobs done. closing logger...");
             }

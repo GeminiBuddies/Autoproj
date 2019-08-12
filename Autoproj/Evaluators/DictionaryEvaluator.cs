@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-using GeminiLab.Autoproj.Processor;
+using GeminiLab.Autoproj.Processors;
 
-namespace GeminiLab.Autoproj.Evaluator {
+namespace GeminiLab.Autoproj.Evaluators {
     public class DictionaryEvaluator : IExpressionEvaluator {
         protected IReadOnlyDictionary<string, string> dict;
         public DictionaryEvaluator(IReadOnlyDictionary<string, string> dict) {

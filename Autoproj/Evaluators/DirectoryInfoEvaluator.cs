@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using GeminiLab.Autoproj.Processor;
-using GeminiLab.Core2.Logger;
+using GeminiLab.Autoproj.Processors;
 
-namespace GeminiLab.Autoproj.Evaluator {
+namespace GeminiLab.Autoproj.Evaluators {
     public class DirectoryInfoEvaluator : IExpressionEvaluator {
         public bool TryEvaluate(out string result, ProcessorEnvironment env, string command, params string[] param) {
             switch (command) {

@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using GeminiLab.Autoproj.Processor;
+using GeminiLab.Autoproj.Processors;
 
-namespace GeminiLab.Autoproj.Handler {
+namespace GeminiLab.Autoproj.Handlers {
     public enum BlockHandlerAcceptResult {
         Accept,
         Reject,

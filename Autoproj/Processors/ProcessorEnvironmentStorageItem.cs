@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GeminiLab.Autoproj.Processor {
+namespace GeminiLab.Autoproj.Processors {
     public class ProcessorEnvironmentStorageItem<T> {
         public ProcessorEnvironment Environment { get; }
         private readonly IDictionary<string, object> _dictionary;

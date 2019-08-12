@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using GeminiLab.Autoproj.Evaluator;
+using GeminiLab.Autoproj.Evaluators;
 
-namespace GeminiLab.Autoproj.Processor {
+namespace GeminiLab.Autoproj.Processors {
     public class ProcessorEnvironment {
         protected ProcessorEnvironment parent;
 

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using GeminiLab.Autoproj.Evaluator;
-using GeminiLab.Autoproj.Handler;
-using GeminiLab.Autoproj.Processor;
+using GeminiLab.Autoproj.Evaluators;
+using GeminiLab.Autoproj.Handlers;
+using GeminiLab.Autoproj.Processors;
 
-namespace GeminiLab.Autoproj.Component {
+namespace GeminiLab.Autoproj.Components {
     // this component contains:
     // - counter
     // - static counter

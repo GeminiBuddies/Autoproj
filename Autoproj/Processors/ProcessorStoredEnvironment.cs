@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using GeminiLab.Core2.ML.Json;
 
-namespace GeminiLab.Autoproj.Processor {
+namespace GeminiLab.Autoproj.Processors {
     public class ProcessorStoredEnvironment : ProcessorEnvironment {
         private ProcessorStoredEnvironment(ProcessorEnvironment parent) : base(parent) { }
 
