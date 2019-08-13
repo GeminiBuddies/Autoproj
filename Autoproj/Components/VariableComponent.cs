@@ -26,7 +26,7 @@ namespace GeminiLab.Autoproj.Components {
                 var key = param[0];
                 var value = param.Length >= 2 ? param[1] : "";
 
-                env.StorageOpenOrCreate<string>(Category, key).Value = value;
+                env.StorageOpenOrCreate<string>(Category, key).Value = Processor.EvaluateLine(value, env, options, $"<def {key}>", 0);
             }
         }
     }

@@ -4,4 +4,10 @@
     <!-- <~unitest~> -->
     <time><~ now "yyyy-MM-dd HH:mm" ~></time>
     <~~ ref_block wtf ~>
+    <list>
+        <item v="<~cc~>"/>
+        <item v="<~cc~>"/>
+        <item v="<~cc~>"/>
+        <item v="<~cc~>"/>
+    </list>
 </root>
