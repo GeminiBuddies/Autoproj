@@ -5,4 +5,9 @@
 
 <~~ def_block wtf ~>
     <wtf><~if~></wtf>
+    <~~ ref_block wtf ~>
+<~~ end_def_block ~>
+
+<~~ def_block x ~>
+    <a><~ param0 ~>=<~ param1 ~></a>
 <~~ end_def_block ~>

@@ -10,4 +10,11 @@
         <item v="<~cc~>"/>
         <item v="<~cc~>"/>
     </list>
+<~! def param0 1 ~>
+<~! def param1 2 ~>
+<~~ ref_block x ~>
+<~! def param0 suka ~>
+<~! def param1 blyat ~>
+<~~ ref_block x ~>
 </root>
+    <~# fuck off ~>

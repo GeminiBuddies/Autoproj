@@ -1,12 +1,14 @@
 <root>
-    <sth a="123123" b="19" c="0" i="test.xml.autoproj" o="C:\Users\Gemini\source\repos\Autoproj\test\test.xml"/>
+    <sth a="123123" b="107" c="0" i="test.xml.autoproj" o="C:\Users\Gemini\source\repos\Autoproj\test\test.xml"/>
     <!-- 万国码テスト -->
-    <time>2019-08-13 16:58</time>
+    <time>2019-08-13 17:57</time>
     <wtf>test.xml.autoproj</wtf>
     <list>
-        <item v="18"/>
-        <item v="18"/>
-        <item v="18"/>
-        <item v="18"/>
+        <item v="106"/>
+        <item v="106"/>
+        <item v="106"/>
+        <item v="106"/>
     </list>
+    <a>1=2</a>
+    <a>suka=blyat</a>
 </root>
