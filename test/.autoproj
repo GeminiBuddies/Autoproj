@@ -1,3 +1,7 @@
 <~! counter c 0 ~>
 <~! static_counter b 0 ~>
 <~! def unitest 万国码テスト ~>
+
+<~~ def_block wtf ~>
+<wtf><~if~></wtf>
+<~~ end_def_block ~>

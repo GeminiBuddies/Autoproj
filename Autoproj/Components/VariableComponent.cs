@@ -1,6 +1,7 @@
 using System.IO;
 using GeminiLab.Autoproj.Evaluators;
 using GeminiLab.Autoproj.Handlers;
+using GeminiLab.Autoproj.IO;
 using GeminiLab.Autoproj.Processors;
 
 namespace GeminiLab.Autoproj.Components {
@@ -20,7 +21,7 @@ namespace GeminiLab.Autoproj.Components {
             return false;
         }
 
-        public void Handle(string command, string[] param, ProcessorEnvironment env, TextWriter output) {
+        public void Handle(string command, string[] param, ProcessorEnvironment env, ProcessorConfig options, ILineAcceptor output) {
             if (command == "def" && param.Length >= 1) {
                 var key = param[0];
                 var value = param.Length >= 2 ? param[1] : "";

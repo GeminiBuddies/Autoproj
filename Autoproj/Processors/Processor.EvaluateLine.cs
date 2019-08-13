@@ -4,7 +4,7 @@ namespace GeminiLab.Autoproj.Processors {
     internal static partial class Processor {
         private static readonly Regex Reg = new Regex(@"<~(?<content>.*?)~>");
 
-        public static string ProcessLine(string line, ProcessorEnvironment env, ProcessorConfig options,
+        public static string EvaluateLine(string line, ProcessorEnvironment env, ProcessorConfig options,
             string unitName, int ln) {
             var logger = options.Logger;
             return Reg.Replace(line, match => {

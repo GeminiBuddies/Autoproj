@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace GeminiLab.Autoproj.Processors {
+    // auxiliary here
     internal static partial class Processor {
         private static char translateEscapeChar(char c) {
             if (c == '"') return '"';

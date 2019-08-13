@@ -81,6 +81,7 @@ namespace GeminiLab.Autoproj {
 
                 var varComp = new VariableComponent();
                 var counterComp = new CounterComponent();
+                var blockComp = new BlockComponent();
 
                 var rootEnv = new ProcessorEnvironment(null);
                 var processorConfig = new ProcessorConfig(suffix, storage, logger, rootEnv);
@@ -92,6 +93,8 @@ namespace GeminiLab.Autoproj {
 
                 processorConfig.AddCommandHandler(varComp, "def");
                 processorConfig.AddCommandHandler(counterComp, "counter", "static_counter");
+
+                processorConfig.AddBlockHandler(blockComp, "def_block", "ref_block");
 
                 Processor.ProcessDirectory(new DirectoryInfo(path), processorConfig.RootEnv, processorConfig);
 

@@ -3,19 +3,16 @@ using GeminiLab.Autoproj.Evaluators;
 
 namespace GeminiLab.Autoproj.Processors {
     internal static partial class Processor {
-        public static void ProcessDirectory(DirectoryInfo directory, ProcessorEnvironment parentEnv,
-            ProcessorConfig options) {
+        public static void ProcessDirectory(DirectoryInfo directory, ProcessorEnvironment parentEnv, ProcessorConfig options) {
             var logger = options.Logger;
             logger.Info($"Entering directory '{directory.FullName}'...");
 
             if (!directory.Exists) {
-                logger.Warn(
-                    $"Directory '{directory.FullName}' doesn't exist, maybe a bad option or an internal error.");
+                logger.Warn($"Directory '{directory.FullName}' doesn't exist, maybe a bad option or an internal error.");
                 return;
             }
 
-            var thisEnv =
-                new ProcessorStoredEnvironment(parentEnv, Path.Join(directory.FullName, options.StorageSuffix));
+            var thisEnv = new ProcessorStoredEnvironment(parentEnv, Path.Join(directory.FullName, options.StorageSuffix));
             thisEnv.AddEvaluator(new DirectoryInfoEvaluator(directory));
             thisEnv.Begin();
 

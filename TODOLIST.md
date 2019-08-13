@@ -10,6 +10,6 @@
 
 # ver 1.1
 
-- [ ] Block handler system.
-- [ ] Block define system.
+- [x] Block handler system.
+- [x] Block define system.
 - [ ] If-else system.
